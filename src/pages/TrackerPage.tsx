@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import DatePicker from 'react-datepicker';
 import type { DailyEntry } from '../types';
 import { ScoreCard } from '../components/ScoreCard';
@@ -25,11 +25,13 @@ export function TrackerPage({ onBack }: TrackerPageProps) {
   const [history, setHistory] = useState<DailyEntry[]>(() => getLast14Days());
   const [saved, setSaved] = useState(false);
 
-  useEffect(() => {
-    const dateStr = toDateString(selectedDate);
+  function handleDateChange(date: Date | null) {
+    if (!date) return;
+    setSelectedDate(date);
+    const dateStr = toDateString(date);
     setEntry(getEntryForDate(dateStr) ?? defaultEntry(dateStr));
     setSaved(false);
-  }, [selectedDate]);
+  }
 
   const updateField = useCallback((field: keyof DailyEntry, value: number) => {
     setEntry((prev) => ({ ...prev, [field]: value }));
@@ -86,7 +88,7 @@ export function TrackerPage({ onBack }: TrackerPageProps) {
           <div className="relative">
             <DatePicker
               selected={selectedDate}
-              onChange={(date: Date | null) => date && setSelectedDate(date)}
+              onChange={handleDateChange}
               maxDate={new Date()}
               dateFormat="dd MMM yyyy"
               className="border border-gray-300 rounded-xl px-4 py-2.5 text-gray-800 font-medium text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 cursor-pointer bg-gray-50 hover:bg-white transition-colors"
