@@ -4,10 +4,7 @@ import type { DailyEntry } from '../types';
 import { ScoreCard } from '../components/ScoreCard';
 import { saveEntry, getEntryForDate, getLast14Days } from '../store/storage';
 import { FACTOR_CONFIGS, TINNITUS_CONFIG } from '../store/constants';
-
-function toDateString(date: Date): string {
-  return date.toISOString().slice(0, 10);
-}
+import { toDateString } from '../utils/date';
 
 function defaultEntry(date: string): DailyEntry {
   return { date, stress: 3, diet: 3, noiseExposure: 3, sleep: 3, tinnitus: 3 };

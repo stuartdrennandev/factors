@@ -8,6 +8,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import type { DailyEntry } from '../types';
+import { toDateString } from '../utils/date';
 
 interface ChartDataPoint {
   date: string;
@@ -31,7 +32,7 @@ function buildChartData(history: DailyEntry[], dataKey: keyof DailyEntry): Chart
   for (let i = 13; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(today.getDate() - i);
-    const dateStr = d.toISOString().slice(0, 10);
+    const dateStr = toDateString(d);
     const entry = history.find((e) => e.date === dateStr);
     data.push({
       date: formatChartDate(dateStr),
