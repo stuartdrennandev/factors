@@ -4,13 +4,7 @@ import type { DailyEntry } from '../types';
 import { ScoreCard } from '../components/ScoreCard';
 import { saveEntry, getEntryForDate, getLast14Days } from '../store/storage';
 import { FACTOR_CONFIGS, TINNITUS_CONFIG } from '../store/constants';
-
-function toDateString(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
+import { toDateString } from '../utils/date';
 
 function defaultEntry(date: string): DailyEntry {
   return { date, stress: 3, diet: 3, noiseExposure: 3, sleep: 3, tinnitus: 3 };

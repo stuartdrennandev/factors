@@ -1,4 +1,5 @@
 import type { DailyEntry } from '../types';
+import { toDateString } from '../utils/date';
 
 const STORAGE_KEY = 'tinnitus-tracker-entries';
 
@@ -33,6 +34,6 @@ export function getLast14Days(): DailyEntry[] {
   const today = new Date();
   const cutoff = new Date(today);
   cutoff.setDate(today.getDate() - 13);
-  const cutoffStr = `${cutoff.getFullYear()}-${String(cutoff.getMonth() + 1).padStart(2, '0')}-${String(cutoff.getDate()).padStart(2, '0')}`;
+  const cutoffStr = toDateString(cutoff);
   return entries.filter((e) => e.date >= cutoffStr);
 }
