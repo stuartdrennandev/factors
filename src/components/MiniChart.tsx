@@ -31,7 +31,7 @@ function buildChartData(history: DailyEntry[], dataKey: keyof DailyEntry): Chart
   for (let i = 13; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(today.getDate() - i);
-    const dateStr = d.toISOString().slice(0, 10);
+    const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     const entry = history.find((e) => e.date === dateStr);
     data.push({
       date: formatChartDate(dateStr),
