@@ -2,9 +2,11 @@ import { useState, useCallback } from 'react';
 import DatePicker from 'react-datepicker';
 import type { DailyEntry } from '../types';
 import { ScoreCard } from '../components/ScoreCard';
+import { MissingDataModal } from '../components/MissingDataModal';
 import { saveEntry, getEntryForDate, getLast14Days } from '../store/storage';
 import { FACTOR_CONFIGS, TINNITUS_CONFIG } from '../store/constants';
 import { toDateString } from '../utils/date';
+import { getMissingDates } from '../utils/insights';
 
 function defaultEntry(date: string): DailyEntry {
   return { date, stress: 3, diet: 3, noiseExposure: 3, sleep: 3, tinnitus: 3 };
@@ -12,15 +14,18 @@ function defaultEntry(date: string): DailyEntry {
 
 interface TrackerPageProps {
   onBack: () => void;
+  onOpenInsights: (entries: DailyEntry[]) => void;
 }
 
-export function TrackerPage({ onBack }: TrackerPageProps) {
+export function TrackerPage({ onBack, onOpenInsights }: TrackerPageProps) {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [entry, setEntry] = useState<DailyEntry>(() =>
     getEntryForDate(toDateString(new Date())) ?? defaultEntry(toDateString(new Date()))
   );
   const [history, setHistory] = useState<DailyEntry[]>(() => getLast14Days());
   const [saved, setSaved] = useState(false);
+  const [showMissingModal, setShowMissingModal] = useState(false);
+  const [missingDates, setMissingDates] = useState<string[]>([]);
 
   function handleDateChange(date: Date | null) {
     if (!date) return;
@@ -39,6 +44,17 @@ export function TrackerPage({ onBack }: TrackerPageProps) {
     saveEntry(entry);
     setHistory(getLast14Days());
     setSaved(true);
+  }
+
+  function handleGenerateInsights() {
+    const currentEntries = getLast14Days();
+    const missing = getMissingDates(currentEntries);
+    if (missing.length > 0) {
+      setMissingDates(missing);
+      setShowMissingModal(true);
+    } else {
+      onOpenInsights(currentEntries);
+    }
   }
 
   const dateStr = toDateString(selectedDate);
@@ -60,16 +76,24 @@ export function TrackerPage({ onBack }: TrackerPageProps) {
             <span className="text-xl">👂</span>
             <h1 className="font-bold text-gray-800 text-lg">Tinnitus Tracker</h1>
           </div>
-          <button
-            onClick={handleSave}
-            className={`px-5 py-2 rounded-full font-semibold text-sm transition-all duration-200 ${
-              saved
-                ? 'bg-green-100 text-green-700 border border-green-300'
-                : 'bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95 shadow-md'
-            }`}
-          >
-            {saved ? '✓ Saved' : 'Save Entry'}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleGenerateInsights}
+              className="px-4 py-2 rounded-full font-semibold text-sm bg-violet-100 text-violet-700 border border-violet-200 hover:bg-violet-200 transition-all duration-200 cursor-pointer"
+            >
+              📊 2-Week Insights
+            </button>
+            <button
+              onClick={handleSave}
+              className={`px-5 py-2 rounded-full font-semibold text-sm transition-all duration-200 cursor-pointer ${
+                saved
+                  ? 'bg-green-100 text-green-700 border border-green-300'
+                  : 'bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95 shadow-md'
+              }`}
+            >
+              {saved ? '✓ Saved' : 'Save Entry'}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -153,6 +177,18 @@ export function TrackerPage({ onBack }: TrackerPageProps) {
           </button>
         </div>
       </main>
+
+      {/* Missing data modal */}
+      {showMissingModal && (
+        <MissingDataModal
+          missingDates={missingDates}
+          onContinue={() => {
+            setShowMissingModal(false);
+            onOpenInsights(getLast14Days());
+          }}
+          onCancel={() => setShowMissingModal(false)}
+        />
+      )}
     </div>
   );
 }
