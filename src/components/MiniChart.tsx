@@ -45,6 +45,7 @@ function buildChartData(history: DailyEntry[], dataKey: keyof DailyEntry): Chart
 export function MiniChart({ history, dataKey, color }: MiniChartProps) {
   const data = buildChartData(history, dataKey);
   const hasData = data.some((d) => d.value !== undefined);
+  const todayLabel = formatChartDate(toDateString(new Date()));
 
   if (!hasData) {
     return (
@@ -57,13 +58,14 @@ export function MiniChart({ history, dataKey, color }: MiniChartProps) {
   return (
     <div className="h-28 w-full mt-3">
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+        <LineChart data={data} margin={{ top: 4, right: 20, left: -20, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
           <XAxis
             dataKey="date"
             tick={{ fontSize: 10, fill: '#9ca3af' }}
-            interval={6}
+            interval="preserveStartEnd"
             tickLine={false}
+            tickFormatter={(value) => (value === todayLabel ? 'Today' : value)}
           />
           <YAxis
             domain={[1, 5]}
