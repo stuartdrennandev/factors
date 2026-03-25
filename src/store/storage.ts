@@ -29,6 +29,12 @@ export function getEntryForDate(date: string): DailyEntry | undefined {
   return loadEntries().find((e) => e.date === date);
 }
 
+export function seedEntries(entries: DailyEntry[]): void {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(
+    [...entries].sort((a, b) => a.date.localeCompare(b.date))
+  ));
+}
+
 export function getLast14Days(): DailyEntry[] {
   const entries = loadEntries();
   const today = new Date();

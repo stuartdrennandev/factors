@@ -3,10 +3,11 @@ import DatePicker from 'react-datepicker';
 import type { DailyEntry } from '../types';
 import { ScoreCard } from '../components/ScoreCard';
 import { MissingDataModal } from '../components/MissingDataModal';
-import { saveEntry, getEntryForDate, getLast14Days } from '../store/storage';
+import { saveEntry, getEntryForDate, getLast14Days, seedEntries } from '../store/storage';
 import { FACTOR_CONFIGS, TINNITUS_CONFIG } from '../store/constants';
 import { toDateString } from '../utils/date';
 import { getMissingDates } from '../utils/insights';
+import { generateSeedEntries } from '../utils/seedData';
 
 function defaultEntry(date: string): DailyEntry {
   return { date, stress: 3, diet: 3, noiseExposure: 3, sleep: 3, tinnitus: 3 };
@@ -55,6 +56,16 @@ export function TrackerPage({ onBack, onOpenInsights }: TrackerPageProps) {
     } else {
       onOpenInsights(currentEntries);
     }
+  }
+
+  function handleSeedData() {
+    const seeded = generateSeedEntries();
+    seedEntries(seeded);
+    // Refresh the UI to reflect the new data
+    const todayStr = toDateString(new Date());
+    setEntry(getEntryForDate(todayStr) ?? defaultEntry(todayStr));
+    setHistory(getLast14Days());
+    setSaved(false);
   }
 
   const dateStr = toDateString(selectedDate);
@@ -125,6 +136,22 @@ export function TrackerPage({ onBack, onOpenInsights }: TrackerPageProps) {
             </button>
           )}
         </div>
+
+        {/* Seed sample data — only shown when no history exists */}
+        {history.length === 0 && (
+          <div className="bg-violet-50 rounded-2xl border border-violet-200 shadow-sm p-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-3">
+            <div className="flex-1">
+              <p className="text-sm font-medium text-violet-800">No data yet?</p>
+              <p className="text-xs text-violet-600">Load 14 days of sample data to explore the charts and insights.</p>
+            </div>
+            <button
+              onClick={handleSeedData}
+              className="px-4 py-2 rounded-full text-sm font-semibold bg-violet-600 text-white hover:bg-violet-700 active:scale-95 transition-all shadow-sm cursor-pointer"
+            >
+              🧪 Load Sample Data
+            </button>
+          </div>
+        )}
 
         {/* Factor cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
