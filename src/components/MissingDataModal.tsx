@@ -41,7 +41,14 @@ export function MissingDataModal({ missingDates, onContinue, onCancel }: Missing
       aria-label="Missing data warning"
     >
       {/* backdrop */}
-      <div className="absolute inset-0 bg-black/40" onClick={handleCancel} />
+      <div
+        className="absolute inset-0 bg-black/40"
+        onClick={handleCancel}
+        onKeyDown={(e) => { if (e.key === 'Escape') handleCancel(); }}
+        role="button"
+        tabIndex={-1}
+        aria-label="Close modal"
+      />
 
       {/* modal card */}
       <div className="relative z-10 w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl">

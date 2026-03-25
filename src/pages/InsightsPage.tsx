@@ -156,7 +156,7 @@ function InsightsSummary({ insights, pairCount }: { insights: FactorInsight[]; p
         <span className="text-3xl">📉</span>
         <h3 className="mt-2 font-semibold text-gray-900">Not Enough Data Yet</h3>
         <p className="mt-1 text-sm text-gray-600">
-          We need at least 4 consecutive days of entries to compute meaningful correlations.
+          We need at least 4 consecutive days of entries (which yields 3 lag-pairs) to compute meaningful correlations.
           Keep tracking daily for better insights!
         </p>
       </div>

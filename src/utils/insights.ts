@@ -4,6 +4,10 @@ import type { DailyEntry, FactorKey } from '../types';
  * Compute Spearman rank‐order correlation between two numeric arrays.
  * Returns NaN when the input is too short (< 3 data points) or has
  * zero variance in either variable (all tied ranks).
+ *
+ * A minimum of 3 paired observations is required for a meaningful
+ * rank correlation (with fewer points the correlation is either
+ * undefined or trivially ±1, providing no statistical insight).
  */
 export function spearmanCorrelation(x: number[], y: number[]): number {
   const n = Math.min(x.length, y.length);
